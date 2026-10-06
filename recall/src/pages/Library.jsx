@@ -1,5 +1,5 @@
 function Library() {
-    retunr (
+    return (
         <div>
             <h1 className="text-3xl font-bold">Your Library.</h1>
             <p className="mt-2 text-zinc-400">
@@ -8,3 +8,5 @@ function Library() {
         </div>
     )
 }
+
+export default Library
