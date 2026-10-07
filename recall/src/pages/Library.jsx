@@ -1,28 +1,31 @@
 import { useState } from 'react'
 import { Plus, BookOpen } from 'lucide-react'
+import { saveSubjects, loadSubjects } from '../storage/subjectStorage'
 
 function Library() {
-  const [subjects, setSubjects] = useState([])
+  const [subjects, setSubjects] = useState(loadSubjects)
   const [subjectName, setSubjectName] = useState('')
 
   function handleCreateSubject(event) {
-    event.preventDefault()
+  event.preventDefault()
 
-    const name = subjectName.trim()
+  const name = subjectName.trim()
 
-    if (!name) return
+  if (!name) return
 
-    const newSubject = {
-      id: crypto.randomUUID(),
-      name: name,
-      createdAt: new Date().toISOString(),
-    }
-
-    console.log('3. newSubject:', newSubject)
-    setSubjects([...subjects, newSubject])
-    console.log('4. subjects before update:', subjects)
-    setSubjectName('')
+  const newSubject = {
+    id: crypto.randomUUID(),
+    name: name,
+    createdAt: new Date().toISOString(),
   }
+
+  const updatedSubjects = [...subjects, newSubject]
+
+  setSubjects(updatedSubjects)
+  saveSubjects(updatedSubjects)
+
+  setSubjectName('')
+}
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
