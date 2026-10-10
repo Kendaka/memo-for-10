@@ -3,6 +3,8 @@ import AppLayout from '../components/layout/AppLayout.jsx'
 import Home from '../pages/Home.jsx'
 import Library from '../pages/Library.jsx'
 import Subject from '../pages/Subject.jsx'
+import Topic from '../pages/Topic.jsx'
+import Note from '../pages/Note.jsx'
 
 
 function App() {
@@ -12,6 +14,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/library" element={<Library />} />
         <Route path="/library/:subjectId" element={<Subject />} />
+        <Route path="/library/:subjectId/:topicId" element={<Topic />} />
+        <Route path="/library/:subjectId/:topicId/:noteId" element={<Note />}/>
         <Route path="/inbox" element={<h1>Inbox</h1>} />
         <Route path="/trash" element={<h1>Trash</h1>} />
       </Route>
