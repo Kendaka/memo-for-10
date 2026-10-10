@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Plus, BookOpen, Folder } from 'lucide-react'
 import { loadSubjects } from '../storage/subjectStorage'
 import { loadTopics, saveTopics } from '../storage/topicStorage'
+import { Link, useParams } from 'react-router-dom'
 
 function Subject() {
   const { subjectId } = useParams()
@@ -102,6 +103,7 @@ function Subject() {
         {subjectTopics.map((topic) => (
           <Link
             key={topic.id}
+            to={`/library/${subjectId}/${topic.id}`}
             className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
           >
             <Folder
