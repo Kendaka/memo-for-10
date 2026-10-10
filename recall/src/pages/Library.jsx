@@ -52,6 +52,31 @@ function handleRenameSubject(subject) {
     saveSubjects(updatedSubjects)
   }
 
+  function handleDeleteSubject(subject) {
+    const confirmed = window.confirm(
+      `Permanently delete "${subject.name}" and all its topics and notes?`
+    )
+
+    if (!confirmed) return
+
+    const updatedSubjects = subjects.filter(
+      (item) => item.id !== subject.id
+    )
+
+    const updatedTopics = loadTopics().filter(
+      (topic) => topic.subjectId !== subject.id
+    )
+
+    const updatedNotes = loadNotes().filter(
+      (note) => note.subjectId !== subject.id
+    )
+
+    saveTopics(updatedTopics)
+    saveNotes(updatedNotes)
+    saveSubjects(updatedSubjects)
+    setSubjects(updatedSubjects)
+  }
+
   return (
     <div className="mx-auto max-w-5xl space-y-8">
 
