@@ -116,24 +116,48 @@ function handleRenameSubject(subject) {
       {/* Subjects */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {subjects.map((subject) => (
-         <Link
+          <div
             key={subject.id}
-            to={`/library/${subject.id}`}
-            className="block rounded-xl border border-zinc-800 bg-zinc-900 p-6 
-            transition-colors hover:border-indigo-500">
-            <BookOpen
-              size={24}
-              className="mb-4 text-indigo-400"
-            />
+            className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
+          >
+            <Link
+              to={`/library/${subject.id}`}
+              className="block"
+            >
+              <BookOpen
+                size={24}
+                className="mb-4 text-indigo-400"
+              />
 
-            <h2 className="font-semibold text-white">
-              {subject.name}
-            </h2>
+              <h2 className="font-semibold text-white">
+                {subject.name}
+              </h2>
 
-            <p className="mt-2 text-sm text-zinc-500">
-              No topics yet
-            </p>
-          </Link>
+              <p className="mt-2 text-sm text-zinc-500">
+                Open subject
+              </p>
+            </Link>
+
+            <div className="mt-5 flex gap-2 border-t border-zinc-800 pt-4">
+              <button
+                type="button"
+                onClick={() => handleRenameSubject(subject)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white"
+              >
+                <Pencil size={15} />
+                Rename
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDeleteSubject(subject)}
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
+              >
+                <Trash2 size={15} />
+                Delete
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 
