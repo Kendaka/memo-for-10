@@ -100,7 +100,7 @@ function Subject() {
       {/* Topic Cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {subjectTopics.map((topic) => (
-          <div
+          <Link
             key={topic.id}
             className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
           >
@@ -116,7 +116,7 @@ function Subject() {
             <p className="mt-2 text-sm text-zinc-500">
               No notes yet
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
