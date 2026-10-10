@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { Plus, BookOpen } from 'lucide-react'
+import { Plus, BookOpen, Pencil, Trash2 } from 'lucide-react'
 import { saveSubjects, loadSubjects } from '../storage/subjectStorage'
 import { Link } from 'react-router-dom'
-
 
 function Library() {
   const [subjects, setSubjects] = useState(loadSubjects)
