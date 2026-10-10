@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Plus, BookOpen } from 'lucide-react'
 import { saveSubjects, loadSubjects } from '../storage/subjectStorage'
+import { Link } from 'react-router-dom'
+
 
 function Library() {
   const [subjects, setSubjects] = useState(loadSubjects)
@@ -65,11 +67,12 @@ function Library() {
 
       {/* Subjects */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {subjects.map((subject) => (
-          <div
+          {subjects.map((subject) => (
+         <Link
             key={subject.id}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
-          >
+            to={`/library/${subject.id}`}
+            className="block rounded-xl border border-zinc-800 bg-zinc-900 p-6 
+            transition-colors hover:border-indigo-500">
             <BookOpen
               size={24}
               className="mb-4 text-indigo-400"
@@ -82,7 +85,7 @@ function Library() {
             <p className="mt-2 text-sm text-zinc-500">
               No topics yet
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
