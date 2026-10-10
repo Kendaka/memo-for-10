@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Plus, BookOpen, Pencil, Trash2 } from 'lucide-react'
 import { saveSubjects, loadSubjects } from '../storage/subjectStorage'
+import { loadTopics, saveTopics } from '../storage/topicStorage'
+import { loadNotes, saveNotes } from '../storage/noteStorage'
 import { Link } from 'react-router-dom'
 
 function Library() {
@@ -27,6 +29,28 @@ function Library() {
 
   setSubjectName('')
 }
+
+function handleRenameSubject(subject) {
+  const newName = window.prompt(
+    'Rename subject:',
+    subject.name
+  )
+
+  if (newName === null) return
+
+  const name = newName.trim()
+
+  if (!name) return
+
+  const updatedSubjects = subjects.map((item) =>
+    item.id === subject.id
+      ? { ...item, name }
+      : item
+  )
+
+    setSubjects(updatedSubjects)
+    saveSubjects(updatedSubjects)
+  }
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
