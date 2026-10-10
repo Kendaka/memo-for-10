@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Plus, BookOpen, Folder } from 'lucide-react'
 import { loadSubjects } from '../storage/subjectStorage'
 import { loadTopics, saveTopics } from '../storage/topicStorage'
-import { Link, useParams } from 'react-router-dom'
 
 function Subject() {
   const { subjectId } = useParams()
