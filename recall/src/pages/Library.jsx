@@ -8,8 +8,8 @@ import { moveSubjectToTrash } from '../storage/trashStorage'
 
 function Library() {
   const [subjects, setSubjects] = useState(
-  () => loadSubjects().filter((subject) => !subject.deletedAt))
-  
+  () => loadSubjects().filter((subject) => !subject.deletedAt)
+)
   const [subjectName, setSubjectName] = useState('')
 
   function handleCreateSubject(event) {

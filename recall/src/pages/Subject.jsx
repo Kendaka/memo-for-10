@@ -12,6 +12,7 @@ import {
 import { loadSubjects } from '../storage/subjectStorage'
 import { loadTopics, saveTopics } from '../storage/topicStorage'
 import { loadNotes, saveNotes } from '../storage/noteStorage'
+import { moveTopicToTrash } from '../storage/trashStorage'
 
 function Subject() {
   const { subjectId } = useParams()
@@ -73,22 +74,14 @@ function Subject() {
 
   function handleDeleteTopic(topic) {
     const confirmed = window.confirm(
-      `Permanently delete "${topic.name}" and all its notes?`
+      `Move "${topic.name}" to Trash?`
     )
 
     if (!confirmed) return
 
-    const updatedTopics = topics.filter(
-      (item) => item.id !== topic.id
-    )
+    moveTopicToTrash(topic.id)
 
-    const updatedNotes = loadNotes().filter(
-      (note) => note.topicId !== topic.id
-    )
-
-    saveNotes(updatedNotes)
-    saveTopics(updatedTopics)
-    setTopics(updatedTopics)
+    setTopics(loadTopics())
   }
   if (!subject) {
     return (
