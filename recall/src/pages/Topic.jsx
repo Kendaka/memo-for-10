@@ -23,8 +23,10 @@ function Topic() {
   const [notes, setNotes] = useState(loadNotes)
 
   const topicNotes = notes.filter(
-    (note) => note.topicId === topicId &&
-              note.subjectId === subjectId
+    (note) =>
+      note.topicId === topicId &&
+      note.subjectId === subjectId &&
+      !note.deletedAt
   )
 
   function handleCreateNote() {
@@ -48,9 +50,23 @@ function Topic() {
     navigate(`/library/${subjectId}/${topicId}/${newNote.id}`)
   }
 
-  if (!topic) {
-    return <p className="text-zinc-400">Topic not found.</p>
-  }
+  if (!subject || !topic) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">
+          Topic unavailable.
+        </h1>
+
+        <p className="text-zinc-400">
+          This topic or its subject may be in Trash.
+        </p>
+
+        <Link to="/trash" className="text-indigo-400">
+          Open Trash
+        </Link>
+      </div>
+    )
+}
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
