@@ -19,14 +19,16 @@ function Subject() {
 
   const subjects = loadSubjects()
   const subject = subjects.find(
-    (item) => item.id === subjectId
+    (item) => item.id === subjectId && !item.deletedAt
   )
 
   const [topics, setTopics] = useState(loadTopics)
   const [topicName, setTopicName] = useState('')
 
   const subjectTopics = topics.filter(
-    (topic) => topic.subjectId === subjectId
+    (topic) =>
+      topic.subjectId === subjectId &&
+      !topic.deletedAt
   )
 
   function handleCreateTopic(event) {

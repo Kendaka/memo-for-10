@@ -5,6 +5,7 @@ import Library from '../pages/Library.jsx'
 import Subject from '../pages/Subject.jsx'
 import Topic from '../pages/Topic.jsx'
 import Note from '../pages/Note.jsx'
+import Trash from '../pages/Trash.jsx'
 
 
 function App() {
