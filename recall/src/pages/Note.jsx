@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { loadNotes, saveNotes } from '../storage/noteStorage'
 import NoteBlock from '../components/notes/NoteBlock'
+import { loadSubjects } from '../storage/subjectStorage'
+import { loadTopics } from '../storage/topicStorage'
+import { moveNoteToTrash } from '../storage/trashStorage'
 
 const blockTypes = [
   { type: 'purpose', label: 'Purpose' },
@@ -17,15 +19,27 @@ const blockTypes = [
 
 function Note() {
   const { subjectId, topicId, noteId } = useParams()
-
+  const navigate = useNavigate()
   const [notes, setNotes] = useState(loadNotes)
   const [showBlockMenu, setShowBlockMenu] = useState(false)
+
+  const subject = loadSubjects().find(
+    (item) => item.id === subjectId && !item.deletedAt
+  )
+
+  const topic = loadTopics().find(
+    (item) =>
+      item.id === topicId &&
+      item.subjectId === subjectId &&
+      !item.deletedAt
+  )
 
   const note = notes.find(
     (item) =>
       item.id === noteId &&
       item.topicId === topicId &&
-      item.subjectId === subjectId
+      item.subjectId === subjectId &&
+      !item.deletedAt
   )
 
   function updateNote(changes) {
@@ -75,8 +89,34 @@ function Note() {
     updateNote({ blocks: updatedBlocks })
   }
 
-  if (!note) {
-    return <p className="text-zinc-400">Note not found.</p>
+  if (!subject || !topic || !note) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">
+          Note unavailable.
+        </h1>
+
+        <p className="text-zinc-400">
+          This note or one of its parent folders may be in Trash.
+        </p>
+
+        <Link to="/trash" className="text-indigo-400">
+          Open Trash
+        </Link>
+      </div>
+    )
+  }
+
+  function handleDeleteNote() {
+    const confirmed = window.confirm(
+        `Move "${note.title}" to Trash?`
+      )
+
+      if (!confirmed) return
+
+      moveNoteToTrash(note.id)
+
+      navigate(`/library/${subjectId}/${topicId}`)
   }
 
   return (
@@ -89,6 +129,15 @@ function Note() {
         <ArrowLeft size={18} />
         Back to Topic
       </Link>
+
+      <button
+        type="button"
+        onClick={handleDeleteNote}
+        className="flex items-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
+      >
+        <Trash2 size={16} />
+        Delete Note
+      </button>
 
       <input
         type="text"
