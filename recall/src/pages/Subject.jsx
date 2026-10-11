@@ -1,8 +1,17 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Plus, BookOpen, Folder } from 'lucide-react'
+import {
+  ArrowLeft,
+  Plus,
+  BookOpen,
+  Folder,
+  Pencil,
+  Trash2
+} from 'lucide-react'
+
 import { loadSubjects } from '../storage/subjectStorage'
 import { loadTopics, saveTopics } from '../storage/topicStorage'
+import { loadNotes, saveNotes } from '../storage/noteStorage'
 
 function Subject() {
   const { subjectId } = useParams()
@@ -40,6 +49,47 @@ function Subject() {
     setTopicName('')
   }
 
+  function handleRenameTopic(topic) {
+    const newName = window.prompt(
+      'Rename topic:',
+      topic.name
+    )
+
+    if (newName === null) return
+
+    const name = newName.trim()
+
+    if (!name) return
+
+    const updatedTopics = topics.map((item) =>
+      item.id === topic.id
+        ? { ...item, name }
+        : item
+    )
+
+    setTopics(updatedTopics)
+    saveTopics(updatedTopics)
+  }
+
+  function handleDeleteTopic(topic) {
+    const confirmed = window.confirm(
+      `Permanently delete "${topic.name}" and all its notes?`
+    )
+
+    if (!confirmed) return
+
+    const updatedTopics = topics.filter(
+      (item) => item.id !== topic.id
+    )
+
+    const updatedNotes = loadNotes().filter(
+      (note) => note.topicId !== topic.id
+    )
+
+    saveNotes(updatedNotes)
+    saveTopics(updatedTopics)
+    setTopics(updatedTopics)
+  }
   if (!subject) {
     return (
       <div className="space-y-4">
@@ -98,28 +148,53 @@ function Subject() {
       </form>
 
       {/* Topic Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {subjectTopics.map((topic) => (
-          <Link
-            key={topic.id}
-            to={`/library/${subjectId}/${topic.id}`}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
+      {/* Topic Cards */}
+<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {subjectTopics.map((topic) => (
+    <div
+      key={topic.id}
+      className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
+    >
+      <Link
+        to={`/library/${subjectId}/${topic.id}`}
+        className="block"
+      >
+        <Folder
+          size={24}
+          className="mb-4 text-indigo-400"
+        />
+
+        <h2 className="font-semibold text-white">
+          {topic.name}
+        </h2>
+
+        <p className="mt-2 text-sm text-zinc-500">
+          Open topic
+        </p>
+      </Link>
+
+      <div className="mt-5 flex gap-2 border-t border-zinc-800 pt-4">
+          <button
+            type="button"
+            onClick={() => handleRenameTopic(topic)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white"
           >
-            <Folder
-              size={24}
-              className="mb-4 text-indigo-400"
-            />
+            <Pencil size={15} />
+            Rename
+          </button>
 
-            <h2 className="font-semibold text-white">
-              {topic.name}
-            </h2>
-
-            <p className="mt-2 text-sm text-zinc-500">
-              No notes yet
-            </p>
-          </Link>
-        ))}
+          <button
+            type="button"
+            onClick={() => handleDeleteTopic(topic)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
+          >
+            <Trash2 size={15} />
+            Delete
+          </button>
+        </div>
       </div>
+    ))}
+  </div>
 
       {subjectTopics.length === 0 && (
         <div className="rounded-xl border border-dashed border-zinc-800 p-10 text-center">
