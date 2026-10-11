@@ -18,7 +18,7 @@ function App() {
         <Route path="/library/:subjectId/:topicId" element={<Topic />} />
         <Route path="/library/:subjectId/:topicId/:noteId" element={<Note />}/>
         <Route path="/inbox" element={<h1>Inbox</h1>} />
-        <Route path="/trash" element={<h1>Trash</h1>} />
+        <Route path="/trash" element={<Trash />} />
       </Route>
     </Routes>
   )

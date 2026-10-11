@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, FileText } from 'lucide-react'
-
+import { loadSubjects } from '../storage/subjectStorage'
 import { loadTopics } from '../storage/topicStorage'
 import { loadNotes, saveNotes } from '../storage/noteStorage'
 
@@ -9,8 +9,15 @@ function Topic() {
   const { subjectId, topicId } = useParams()
   const navigate = useNavigate()
 
+  const subject = loadSubjects().find(
+    (item) => item.id === subjectId && !item.deletedAt
+  )
+
   const topic = loadTopics().find(
-    (item) => item.id === topicId && item.subjectId === subjectId
+    (item) =>
+      item.id === topicId &&
+      item.subjectId === subjectId &&
+      !item.deletedAt
   )
 
   const [notes, setNotes] = useState(loadNotes)
