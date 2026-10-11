@@ -25,27 +25,60 @@ function Trash() {
     setSubjects(updated)
   }
 
-  function restoreTopic(id) {
+    function restoreTopic(id) {
+    const topic = topics.find((item) => item.id === id)
+
+    const parentExists = subjects.some(
+        (subject) =>
+        subject.id === topic?.subjectId &&
+        !subject.deletedAt
+    )
+
+    if (!parentExists) {
+        window.alert('Restore the parent subject first.')
+        return
+    }
+
     const updated = topics.map((item) =>
-      item.id === id
+        item.id === id
         ? { ...item, deletedAt: null }
         : item
     )
 
     saveTopics(updated)
     setTopics(updated)
-  }
+    }
 
-  function restoreNote(id) {
+    function restoreNote(id) {
+    const note = notes.find((item) => item.id === id)
+
+    const subjectExists = subjects.some(
+        (subject) =>
+        subject.id === note?.subjectId &&
+        !subject.deletedAt
+    )
+
+    const topicExists = topics.some(
+        (topic) =>
+        topic.id === note?.topicId &&
+        topic.subjectId === note?.subjectId &&
+        !topic.deletedAt
+    )
+
+    if (!subjectExists || !topicExists) {
+        window.alert('Restore the parent subject and topic first.')
+        return
+    }
+
     const updated = notes.map((item) =>
-      item.id === id
+        item.id === id
         ? { ...item, deletedAt: null }
         : item
     )
 
     saveNotes(updated)
     setNotes(updated)
-  }
+    }
 
   function permanentlyDelete(type, id) {
     const confirmed = window.confirm(
