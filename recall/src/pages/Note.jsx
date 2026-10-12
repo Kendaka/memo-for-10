@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { loadNotes, saveNotes } from '../storage/noteStorage'
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import NoteBlock from '../components/notes/NoteBlock'
 import { loadSubjects } from '../storage/subjectStorage'
 import { loadTopics } from '../storage/topicStorage'
