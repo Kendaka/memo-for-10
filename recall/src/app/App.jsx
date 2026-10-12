@@ -6,6 +6,7 @@ import Subject from '../pages/Subject.jsx'
 import Topic from '../pages/Topic.jsx'
 import Note from '../pages/Note.jsx'
 import Trash from '../pages/Trash.jsx'
+import Search from '../pages/Search.jsx'
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/library/:subjectId/:topicId/:noteId" element={<Note />}/>
         <Route path="/inbox" element={<h1>Inbox</h1>} />
         <Route path="/trash" element={<Trash />} />
+        <Route path="/search" element={<Search />} />
       </Route>
     </Routes>
   )
