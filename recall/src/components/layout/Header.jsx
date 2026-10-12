@@ -11,30 +11,18 @@ function Header() {
         </p>
       </div>
 
-      <div className="flex items-center gap-3">
+        <Link
+      to="/search"
+      className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-zinc-400 transition-colors hover:border-indigo-500 hover:text-white"
+    >
+      <Search size={17} />
 
-        <button
-          type="button"
-          disabled
-          className="flex items-center gap-3 rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-400 opacity-60"
-        >
-          <Search size={18} />
-          <span>Search</span>
-          <span className="ml-6 text-xs text-zinc-500">
-            Ctrl K
-          </span>
-        </button>
+      <span>Search notes...</span>
 
-        <button
-          type="button"
-          disabled
-          className="flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white opacity-60"
-        >
-          <Plus size={18} />
-          New
-        </button>
-
-      </div>
+      <kbd className="ml-6 hidden rounded border border-zinc-700 px-2 py-0.5 text-xs text-zinc-500 sm:inline">
+        Search
+      </kbd>
+    </Link>
     </header>
   )
 }
