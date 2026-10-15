@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, FileText } from 'lucide-react'
-import { loadSubjects } from '../storage/subjectStorage'
-import { loadTopics } from '../storage/topicStorage'
-import { loadNotes, saveNotes } from '../storage/noteStorage'
+import { loadSubjects } from './storage/subjectStorage'
+import { loadTopics } from './storage/topicStorage'
+import { loadNotes, saveNotes } from './storage/noteStorage'
 
 function Topic() {
   const { subjectId, topicId } = useParams()

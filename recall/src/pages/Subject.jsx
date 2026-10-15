@@ -9,10 +9,10 @@ import {
   Trash2
 } from 'lucide-react'
 
-import { loadSubjects } from '../storage/subjectStorage'
-import { loadTopics, saveTopics } from '../storage/topicStorage'
-import { loadNotes, saveNotes } from '../storage/noteStorage'
-import { moveTopicToTrash } from '../storage/trashStorage'
+import { loadSubjects } from './storage/subjectStorage'
+import { loadTopics, saveTopics } from './storage/topicStorage'
+import { loadNotes, saveNotes } from './storage/noteStorage'
+import { moveTopicToTrash } from './storage/trashStorage'
 
 function Subject() {
   const { subjectId } = useParams()

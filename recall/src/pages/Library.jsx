@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Plus, BookOpen, Pencil, Trash2 } from 'lucide-react'
-import { saveSubjects, loadSubjects } from '../storage/subjectStorage'
-import { loadTopics, saveTopics } from '../storage/topicStorage'
-import { loadNotes, saveNotes } from '../storage/noteStorage'
+import { saveSubjects, loadSubjects } from './storage/subjectStorage'
+import { loadTopics, saveTopics } from './storage/topicStorage'
+import { loadNotes, saveNotes } from './storage/noteStorage'
 import { Link } from 'react-router-dom'
-import { moveSubjectToTrash } from '../storage/trashStorage'
+import { moveSubjectToTrash } from './storage/trashStorage'
 
 function Library() {
   const [subjects, setSubjects] = useState(

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { RotateCcw, Trash2 } from 'lucide-react'
 
-import { loadSubjects, saveSubjects } from '../storage/subjectStorage'
-import { loadTopics, saveTopics } from '../storage/topicStorage'
-import { loadNotes, saveNotes } from '../storage/noteStorage'
+import { loadSubjects, saveSubjects } from './storage/subjectStorage'
+import { loadTopics, saveTopics } from './storage/topicStorage'
+import { loadNotes, saveNotes } from './storage/noteStorage'
 
 function Trash() {
   const [subjects, setSubjects] = useState(loadSubjects)

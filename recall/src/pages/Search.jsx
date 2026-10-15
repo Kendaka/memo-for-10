@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Search as SearchIcon, FileText } from 'lucide-react'
 
-import { loadSubjects } from '../storage/subjectStorage'
-import { loadTopics } from '../storage/topicStorage'
-import { loadNotes } from '../storage/noteStorage'
+import { loadSubjects } from './storage/subjectStorage'
+import { loadTopics } from './storage/topicStorage'
+import { loadNotes } from './storage/noteStorage'
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams()
