@@ -1,11 +1,13 @@
+
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { loadNotes, saveNotes } from './storage/noteStorage'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
+
+import { loadNotes, saveNotes } from '../storage/noteStorage'
+import { loadSubjects } from '../storage/subjectStorage'
+import { loadTopics } from '../storage/topicStorage'
+import { moveNoteToTrash } from '../storage/trashStorage'
 import NoteBlock from '../components/notes/NoteBlock'
-import { loadSubjects } from './storage/subjectStorage'
-import { loadTopics } from './storage/topicStorage'
-import { moveNoteToTrash } from './storage/trashStorage'
 
 const blockTypes = [
   { type: 'purpose', label: 'Purpose' },
@@ -21,28 +23,45 @@ const blockTypes = [
 function Note() {
   const { subjectId, topicId, noteId } = useParams()
   const navigate = useNavigate()
+
   const [notes, setNotes] = useState(loadNotes)
   const [showBlockMenu, setShowBlockMenu] = useState(false)
 
-  const subject = loadSubjects().find(
-    (item) => item.id === subjectId && !item.deletedAt
-  )
+  // Inbox notes have no subject or topic in their URL.
+  const isInboxNote = !subjectId && !topicId
 
-  const topic = loadTopics().find(
-    (item) =>
-      item.id === topicId &&
-      item.subjectId === subjectId &&
-      !item.deletedAt
-  )
+  // Library notes must belong to active subjects and topics.
+  const subject = isInboxNote
+    ? null
+    : loadSubjects().find(
+        (item) =>
+          item.id === subjectId &&
+          !item.deletedAt
+      )
 
+  const topic = isInboxNote
+    ? null
+    : loadTopics().find(
+        (item) =>
+          item.id === topicId &&
+          item.subjectId === subjectId &&
+          !item.deletedAt
+      )
+
+  // Find the note based on whether it belongs to Inbox or Library.
   const note = notes.find(
     (item) =>
       item.id === noteId &&
-      item.topicId === topicId &&
-      item.subjectId === subjectId &&
-      !item.deletedAt
+      !item.deletedAt &&
+      (
+        isInboxNote
+          ? item.subjectId == null && item.topicId == null
+          : item.subjectId === subjectId &&
+            item.topicId === topicId
+      )
   )
 
+  // Save changes to the note automatically.
   function updateNote(changes) {
     const updatedNotes = notes.map((item) =>
       item.id === noteId
@@ -58,7 +77,10 @@ function Note() {
     saveNotes(updatedNotes)
   }
 
+  // Add a new structured block.
   function addBlock(type) {
+    if (!note) return
+
     const newBlock = {
       id: crypto.randomUUID(),
       type,
@@ -72,7 +94,10 @@ function Note() {
     setShowBlockMenu(false)
   }
 
+  // Update the content of an existing block.
   function updateBlock(blockId, content) {
+    if (!note) return
+
     const updatedBlocks = (note.blocks ?? []).map((block) =>
       block.id === blockId
         ? { ...block, content }
@@ -82,7 +107,10 @@ function Note() {
     updateNote({ blocks: updatedBlocks })
   }
 
+  // Delete a single block.
   function deleteBlock(blockId) {
+    if (!note) return
+
     const updatedBlocks = (note.blocks ?? []).filter(
       (block) => block.id !== blockId
     )
@@ -90,56 +118,90 @@ function Note() {
     updateNote({ blocks: updatedBlocks })
   }
 
-  if (!subject || !topic || !note) {
+  // Move the note to Trash.
+  function handleDeleteNote() {
+    if (!note) return
+
+    const confirmed = window.confirm(
+      `Move "${note.title}" to Trash?`
+    )
+
+    if (!confirmed) return
+
+    moveNoteToTrash(note.id)
+
+    navigate(
+      isInboxNote
+        ? '/inbox'
+        : `/library/${subjectId}/${topicId}`
+    )
+  }
+
+  // Choose the correct destination for the Back button.
+  const backPath = isInboxNote
+    ? '/inbox'
+    : `/library/${subjectId}/${topicId}`
+
+  const backLabel = isInboxNote
+    ? 'Back to Inbox'
+    : 'Back to Topic'
+
+  // Prevent access to deleted notes or unavailable parents.
+  if (!note || (!isInboxNote && (!subject || !topic))) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold text-white">
           Note unavailable.
         </h1>
 
         <p className="text-zinc-400">
-          This note or one of its parent folders may be in Trash.
+          This note may have been moved, deleted,
+          or its parent folder may be in Trash.
         </p>
 
-        <Link to="/trash" className="text-indigo-400">
-          Open Trash
-        </Link>
+        <div className="flex gap-4">
+          <Link
+            to="/inbox"
+            className="text-indigo-400 hover:text-indigo-300"
+          >
+            Open Inbox
+          </Link>
+
+          <Link
+            to="/trash"
+            className="text-indigo-400 hover:text-indigo-300"
+          >
+            Open Trash
+          </Link>
+        </div>
       </div>
     )
-  }
-
-  function handleDeleteNote() {
-    const confirmed = window.confirm(
-        `Move "${note.title}" to Trash?`
-      )
-
-      if (!confirmed) return
-
-      moveNoteToTrash(note.id)
-
-      navigate(`/library/${subjectId}/${topicId}`)
   }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
 
-      <Link
-        to={`/library/${subjectId}/${topicId}`}
-        className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white"
-      >
-        <ArrowLeft size={18} />
-        Back to Topic
-      </Link>
+      {/* Navigation and delete action */}
+      <div className="flex items-center justify-between gap-4">
+        <Link
+          to={backPath}
+          className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white"
+        >
+          <ArrowLeft size={18} />
+          {backLabel}
+        </Link>
 
-      <button
-        type="button"
-        onClick={handleDeleteNote}
-        className="flex items-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
-      >
-        <Trash2 size={16} />
-        Delete Note
-      </button>
+        <button
+          type="button"
+          onClick={handleDeleteNote}
+          className="flex items-center gap-2 rounded-lg border border-red-500/20 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10"
+        >
+          <Trash2 size={16} />
+          Delete Note
+        </button>
+      </div>
 
+      {/* Editable note title */}
       <input
         type="text"
         value={note.title}
@@ -167,6 +229,7 @@ function Note() {
         </div>
       )}
 
+      {/* Structured note blocks */}
       <div className="space-y-4">
         {(note.blocks ?? []).map((block) => (
           <NoteBlock
@@ -180,6 +243,7 @@ function Note() {
         ))}
       </div>
 
+      {/* Add Block button */}
       <button
         type="button"
         onClick={() => setShowBlockMenu(!showBlockMenu)}
@@ -189,6 +253,7 @@ function Note() {
         Add Block
       </button>
 
+      {/* Block selection menu */}
       {showBlockMenu && (
         <div className="grid grid-cols-2 gap-2 rounded-xl border border-zinc-800 bg-zinc-900 p-3 sm:grid-cols-4">
           {blockTypes.map((item) => (
