@@ -8,6 +8,7 @@ import Note from '../pages/Note.jsx'
 import Trash from '../pages/Trash.jsx'
 import Search from '../pages/Search.jsx'
 import Inbox from '../pages/Inbox.jsx'
+import Backup from '../pages/Backup.jsx'
 
 
 function App() {
