@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Plus, FileText, Trash2, FolderInput } from 'lucide-react'
-
-import { loadNotes, saveNotes } from '../storage/noteStorage'
-import { loadSubjects } from '../storage/subjectStorage'
-import { loadTopics } from '../storage/topicStorage'
-import { moveNoteToTrash } from '../storage/trashStorage'
+import { loadNotes, saveNotes } from './storage/noteStorage'
+import { loadSubjects } from './storage/subjectStorage'
+import { loadTopics } from './storage/topicStorage'
+import { moveNoteToTrash } from './storage/trashStorage'
 
 function Inbox() {
   const navigate = useNavigate()

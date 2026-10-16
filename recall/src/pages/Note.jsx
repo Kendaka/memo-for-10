@@ -2,11 +2,10 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
-
-import { loadNotes, saveNotes } from '../storage/noteStorage'
-import { loadSubjects } from '../storage/subjectStorage'
-import { loadTopics } from '../storage/topicStorage'
-import { moveNoteToTrash } from '../storage/trashStorage'
+import { loadNotes, saveNotes } from './storage/noteStorage'
+import { loadSubjects } from './storage/subjectStorage'
+import { loadTopics } from './storage/topicStorage'
+import { moveNoteToTrash } from './storage/trashStorage'
 import NoteBlock from '../components/notes/NoteBlock'
 
 const blockTypes = [
