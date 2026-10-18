@@ -1,5 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { House, LibraryBig, Inbox, Trash2 } from 'lucide-react'
+import {
+  House,
+  LibraryBig,
+  Inbox,
+  Trash2,
+  HardDriveDownload,
+} from 'lucide-react'
 
 function Sidebar() {
   const navigation = [
@@ -7,9 +13,14 @@ function Sidebar() {
     { name: 'Library', path: '/library', icon: LibraryBig },
     { name: 'Inbox', path: '/inbox', icon: Inbox },
     { name: 'Trash', path: '/trash', icon: Trash2 },
+    {
+      name: 'Backup & Restore',
+      path: '/backup',
+      icon: HardDriveDownload,
+    },
   ]
 
-   return (
+  return (
     <aside className="w-60 shrink-0 border-r border-zinc-800 bg-zinc-900 p-5">
       <h1 className="mb-10 text-2xl font-bold text-white">
         Recall<span className="text-indigo-400">.</span>
