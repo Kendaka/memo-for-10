@@ -5,7 +5,7 @@ import { Download, Upload, ShieldCheck } from 'lucide-react'
 import {
   exportBackup,
   importBackup,
-} from '../storage/backupStorage'
+} from './storage/backupStorage'
 
 function Backup() {
   const [message, setMessage] = useState('')
