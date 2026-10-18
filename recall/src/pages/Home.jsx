@@ -1,97 +1,316 @@
+
 import { Link } from 'react-router-dom'
 import {
-  BookOpen,
-  Plus,
   LibraryBig,
+  Folder,
+  FileText,
+  Inbox,
+  ArrowRight,
+  Plus,
   Clock3,
-  ArrowRight
 } from 'lucide-react'
 
+import { loadSubjects } from './storage/subjectStorage'
+import { loadTopics } from './storage/topicStorage'
+import { loadNotes } from './storage/noteStorage'
+
 function Home() {
+  const subjects = loadSubjects().filter(
+    (subject) => !subject.deletedAt
+  )
+
+  const allTopics = loadTopics()
+  const allNotes = loadNotes()
+
+  const activeSubjectIds = new Set(
+    subjects.map((subject) => subject.id)
+  )
+
+  const topics = allTopics.filter(
+    (topic) =>
+      !topic.deletedAt &&
+      activeSubjectIds.has(topic.subjectId)
+  )
+
+  const activeTopicIds = new Set(
+    topics.map((topic) => topic.id)
+  )
+
+  function isInboxNote(note) {
+    return note.subjectId == null && note.topicId == null
+  }
+
+  // Exclude deleted notes and notes in deleted folders.
+  const notes = allNotes.filter((note) => {
+    if (note.deletedAt) return false
+
+    if (isInboxNote(note)) return true
+
+    return (
+      activeSubjectIds.has(note.subjectId) &&
+      activeTopicIds.has(note.topicId)
+    )
+  })
+
+  const inboxNotes = notes.filter(isInboxNote)
+
+  // Sort by most recently edited.
+  const recentNotes = [...notes]
+    .sort((a, b) => {
+      const dateA = new Date(
+        a.updatedAt || a.createdAt || 0
+      ).getTime()
+
+      const dateB = new Date(
+        b.updatedAt || b.createdAt || 0
+      ).getTime()
+
+      return dateB - dateA
+    })
+    .slice(0, 5)
+
+  function getNoteLocation(note) {
+    if (isInboxNote(note)) {
+      return {
+        label: 'Inbox',
+        path: `/inbox/${note.id}`,
+      }
+    }
+
+    const subject = subjects.find(
+      (item) => item.id === note.subjectId
+    )
+
+    const topic = topics.find(
+      (item) =>
+        item.id === note.topicId &&
+        item.subjectId === note.subjectId
+    )
+
+    return {
+      label: `${subject?.name || 'Subject'} / ${topic?.name || 'Topic'}`,
+      path: `/library/${note.subjectId}/${note.topicId}/${note.id}`,
+    }
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return 'Recently added'
+
+    const date = new Date(dateString)
+
+    if (Number.isNaN(date.getTime())) {
+      return 'Recently added'
+    }
+
+    return date.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  }
+
+  const stats = [
+    {
+      label: 'Subjects',
+      value: subjects.length,
+      icon: LibraryBig,
+      path: '/library',
+    },
+    {
+      label: 'Topics',
+      value: topics.length,
+      icon: Folder,
+      path: '/library',
+    },
+    {
+      label: 'Notes',
+      value: notes.length,
+      icon: FileText,
+      path: '/library',
+    },
+  ]
+
   return (
-    <div className="mx-auto max-w-5xl space-y-10">
-
-      {/* Welcome Section */}
-      <section>
-        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-indigo-400">
-          Your Workspace
-        </p>
-
-        <h1 className="text-4xl font-bold tracking-tight text-white">
+    <div className="mx-auto max-w-6xl space-y-10">
+      {/* Welcome */}
+      <div>
+        <h1 className="text-4xl font-bold text-white">
           Hi Kendrick<span className="text-indigo-400">.</span>
         </h1>
 
         <p className="mt-3 text-zinc-400">
-          A quiet place to keep what you learn.
+          Welcome back to your knowledge space.
         </p>
-      </section>
+      </div>
 
-      {/* Empty State */}
-      <section className="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+      {/* Statistics */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {stats.map((stat) => {
+          const Icon = stat.icon
 
-        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10">
-          <BookOpen className="text-indigo-400" size={28} />
-        </div>
+          return (
+            <Link
+              key={stat.label}
+              to={stat.path}
+              className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 transition-colors hover:border-indigo-500/50"
+            >
+              <Icon
+                size={23}
+                className="mb-5 text-indigo-400"
+              />
 
-        <h2 className="text-xl font-semibold text-white">
-          Your knowledge starts here.
-        </h2>
+              <p className="text-3xl font-bold text-white">
+                {stat.value}
+              </p>
 
-        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-400">
-          Create your first subject and start organizing
-          everything you learn, one concept at a time.
-        </p>
+              <p className="mt-2 text-sm text-zinc-400">
+                {stat.label}
+              </p>
+            </Link>
+          )
+        })}
+      </div>
 
+      {/* Quick actions */}
+      <div className="grid gap-4 sm:grid-cols-2">
         <Link
-          to="/library"
-          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-indigo-600"
+          to="/inbox"
+          className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-indigo-500/50"
         >
-          <Plus size={18} />
-          Create your first subject
-        </Link>
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg bg-indigo-500/10 p-3">
+              <Plus
+                size={22}
+                className="text-indigo-400"
+              />
+            </div>
 
-      </section>
+            <div>
+              <p className="font-semibold text-white">
+                Capture an idea
+              </p>
 
-      {/* Overview Cards */}
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
-        <Link
-          to="/library"
-          className="group rounded-xl border border-zinc-800 bg-zinc-900 p-6 transition-colors hover:border-zinc-700"
-        >
-          <div className="mb-5 flex items-center justify-between">
-            <LibraryBig className="text-indigo-400" size={23} />
-            <ArrowRight
-              className="text-zinc-500 transition-transform group-hover:translate-x-1"
-              size={18}
-            />
+              <p className="mt-1 text-sm text-zinc-400">
+                Create a note in your Inbox
+              </p>
+            </div>
           </div>
 
-          <h3 className="font-semibold text-white">
-            My Subjects
-          </h3>
-
-          <p className="mt-2 text-sm text-zinc-400">
-            Your learning library will appear here.
-          </p>
+          <ArrowRight
+            size={19}
+            className="text-zinc-500"
+          />
         </Link>
 
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-          <div className="mb-5">
-            <Clock3 className="text-indigo-400" size={23} />
+        <Link
+          to="/inbox"
+          className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-indigo-500/50"
+        >
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg bg-indigo-500/10 p-3">
+              <Inbox
+                size={22}
+                className="text-indigo-400"
+              />
+            </div>
+
+            <div>
+              <p className="font-semibold text-white">
+                Review Inbox
+              </p>
+
+              <p className="mt-1 text-sm text-zinc-400">
+                {inboxNotes.length} unorganized{' '}
+                {inboxNotes.length === 1 ? 'note' : 'notes'}
+              </p>
+            </div>
           </div>
 
-          <h3 className="font-semibold text-white">
+          <ArrowRight
+            size={19}
+            className="text-zinc-500"
+          />
+        </Link>
+      </div>
+
+      {/* Recent notes */}
+      <section className="space-y-5">
+        <div className="flex items-center gap-3">
+          <Clock3
+            size={21}
+            className="text-indigo-400"
+          />
+
+          <h2 className="text-xl font-semibold text-white">
             Recent Notes
-          </h3>
-
-          <p className="mt-2 text-sm text-zinc-400">
-            Your recently opened notes will appear here.
-          </p>
+          </h2>
         </div>
 
-      </section>
+        {recentNotes.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-zinc-800 p-10 text-center">
+            <FileText
+              size={30}
+              className="mx-auto text-zinc-600"
+            />
 
+            <p className="mt-4 text-zinc-400">
+              No notes yet. Start capturing what you learn.
+            </p>
+
+            <Link
+              to="/inbox"
+              className="mt-4 inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300"
+            >
+              Create your first note
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {recentNotes.map((note) => {
+              const location = getNoteLocation(note)
+
+              return (
+                <Link
+                  key={note.id}
+                  to={location.path}
+                  className="flex items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-indigo-500/50"
+                >
+                  <div className="flex min-w-0 items-center gap-4">
+                    <FileText
+                      size={20}
+                      className="shrink-0 text-indigo-400"
+                    />
+
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-white">
+                        {note.title || 'Untitled Note'}
+                      </p>
+
+                      <p className="mt-1 truncate text-sm text-zinc-500">
+                        {location.label}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="hidden shrink-0 items-center gap-3 sm:flex">
+                    <span className="text-xs text-zinc-500">
+                      {formatDate(
+                        note.updatedAt || note.createdAt
+                      )}
+                    </span>
+
+                    <ArrowRight
+                      size={17}
+                      className="text-zinc-500"
+                    />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </section>
     </div>
   )
 }
